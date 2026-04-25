@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Content Security Policy: restrict data exfil, only allow known API origins -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anthropic.com https://api.openai.com https://generativelanguage.googleapis.com https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: blob:; frame-ancestors 'none';">
-<title>The Bar — Legal Practice Enablement Platform</title>
+<title>The Bar — AI Legal Practice Platform</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
@@ -500,11 +500,42 @@ body{background:var(--ink);color:var(--tp);font-family:'Instrument Sans',sans-se
 .pdf-preview .pdf-section-title{font-size:9pt;letter-spacing:0.2em;text-transform:uppercase;color:#8a6e30;border-bottom:1px solid #e0d0b0;padding-bottom:4px;margin-bottom:10px;}
 .pdf-preview .pdf-body{font-size:11pt;color:#333;line-height:1.9;}
 
-@media(max-width:768px){
-  .mob-header{display:flex;}
-  .sb{position:fixed;left:-100%;top:0;bottom:0;z-index:195;transition:left 0.3s;width:260px;}
-  .sb.open{left:0;}
-  #app{padding-top:56px;}
+/* ══ FREEMIUM ══ */
+.paywall-overlay{position:fixed;inset:0;background:rgba(8,7,10,0.92);z-index:600;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.paywall-box{background:var(--s2);border:1px solid var(--border2);max-width:520px;width:100%;position:relative;}
+.paywall-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.paywall-inner{padding:32px 28px;}
+.paywall-icon{font-size:28px;margin-bottom:14px;}
+.paywall-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--parchment);margin-bottom:8px;line-height:1.2;}
+.paywall-title em{font-style:italic;color:var(--gold);}
+.paywall-saved{background:var(--gold-glow);border:1px solid var(--border2);padding:10px 14px;margin:14px 0;font-family:'DM Mono',monospace;font-size:9px;color:var(--gold-dim);letter-spacing:0.12em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;}
+.paywall-saved-val{font-size:18px;color:var(--gold);font-family:'Cormorant Garamond',serif;font-weight:300;}
+.paywall-tiers{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:18px 0;}
+.paywall-tier{border:1px solid var(--border);padding:18px 16px;cursor:pointer;transition:all 0.2s;position:relative;}
+.paywall-tier:hover{border-color:var(--border2);background:var(--s3);}
+.paywall-tier.featured{border-color:var(--gold);background:rgba(201,168,76,0.05);}
+.paywall-tier-badge{position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--ink);font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.12em;padding:2px 8px;text-transform:uppercase;white-space:nowrap;}
+.paywall-tier-price{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--parchment);line-height:1;}
+.paywall-tier-period{font-family:'DM Mono',monospace;font-size:8px;color:var(--tm);letter-spacing:0.1em;}
+.paywall-tier-name{font-family:'DM Mono',monospace;font-size:9px;color:var(--gold-dim);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:8px;}
+.paywall-tier-features{font-size:11px;color:var(--ts);line-height:1.8;margin-top:8px;}
+.paywall-cta{width:100%;padding:13px;background:var(--gold);color:var(--ink);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;border:none;cursor:pointer;font-weight:500;transition:all 0.2s;margin-top:4px;}
+.paywall-cta:hover{background:var(--gold-light);}
+.paywall-cta-sec{width:100%;padding:11px;background:transparent;color:var(--ts);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;border:1px solid var(--border);cursor:pointer;transition:all 0.2s;margin-top:6px;}
+.paywall-cta-sec:hover{border-color:var(--border2);color:var(--tp);}
+.paywall-byok{display:none;padding:14px;border:1px solid var(--border);background:var(--s3);margin-top:10px;}
+.paywall-byok-title{font-family:'DM Mono',monospace;font-size:8px;color:var(--gold-dim);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:8px;}
+.paywall-byok input{width:100%;background:var(--s4);border:1px solid var(--border);color:var(--tp);font-family:'DM Mono',monospace;font-size:11px;padding:7px 10px;outline:none;margin-bottom:7px;}
+.paywall-byok input:focus{border-color:var(--gold-dim);}
+.paywall-dismiss{position:absolute;top:12px;right:14px;background:transparent;border:none;color:var(--tm);font-size:18px;cursor:pointer;padding:4px 8px;line-height:1;}
+.paywall-dismiss:hover{color:var(--ts);}
+.usage-bar-wrap{padding:10px 16px;background:var(--s3);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;font-family:'DM Mono',monospace;font-size:8px;color:var(--tm);letter-spacing:0.1em;flex-shrink:0;}
+.usage-bar-track{flex:1;height:3px;background:var(--s4);border-radius:2px;overflow:hidden;}
+.usage-bar-fill{height:100%;background:var(--gold-dim);transition:width 0.5s ease;border-radius:2px;}
+.usage-bar-fill.warn{background:var(--amber);}
+.usage-bar-fill.full{background:var(--red);}
+.pro-badge{display:inline-block;font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.1em;padding:1px 5px;border:1px solid var(--gold-dim);color:var(--gold-dim);text-transform:uppercase;margin-left:6px;vertical-align:middle;}
+
   .stats-row{grid-template-columns:1fr 1fr;}
   .analytics-grid{grid-template-columns:1fr 1fr;}
   .fg{grid-template-columns:1fr;}
@@ -551,7 +582,7 @@ body{background:var(--ink);color:var(--tp);font-family:'Instrument Sans',sans-se
         <div class="sign-line"></div>
       </div>
       <button class="btn btn-ghost btn-sm" onclick="clearSignature()" style="margin-bottom:4px;">Clear Signature</button>
-      <div style="margin-top:12px;font-family:'DM Mono',monospace;font-size:9px;color:var(--tm);line-height:1.7;">By affixing an electronic signature below, the signatory acknowledges having read and agreed to the engagement letter terms in their entirety. This electronic signature is intended to be the legally binding equivalent of a handwritten signature, in full compliance with the Uniform Electronic Transactions Act (UETA) and the Electronic Signatures in Global and National Commerce Act (E-SIGN Act, 15 U.S.C. § 7001 et seq.). The executing attorney assumes all responsibility for confirming the signatory's capacity and intent.</div>
+      <div style="margin-top:12px;font-family:'DM Mono',monospace;font-size:9px;color:var(--tm);line-height:1.7;">By signing, the client confirms they have read and agree to the engagement letter terms. This is an electronic signature with legal validity under the E-Sign Act.</div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeEsign()">Cancel</button>
@@ -578,11 +609,11 @@ body{background:var(--ink);color:var(--tp);font-family:'Instrument Sans',sans-se
   <section class="lhero">
     <div class="lhero-badge">
       <span class="lhero-badge-dot"></span>
-      Now live — free for every solo &amp; small-firm attorney
+      Now live — free for solo &amp; small firm attorneys
     </div>
-    <h1>Elite legal infrastructure,<br>traditionally reserved for the <em>Am Law 100</em>,<br>now built for the <strong>agile solo practitioner.</strong></h1>
-    <p class="lhero-sub">The Bar eliminates the high-overhead barrier to entry that has historically separated solo practitioners from enterprise-grade legal infrastructure. Every workflow available to the Am Law 100 — intake, research, drafting, compliance — delivered to a solo desk, at zero cost.</p>
-    <p class="lhero-pain">Legacy enterprise systems were architected for firms with dedicated IT, billing departments, and per-seat budgets that exceed most solo practitioners' monthly overhead. The Bar was not.</p>
+    <h1>You didn't go to law school<br>to do <em>paperwork</em> for 4 hours<br>before you can start <strong>lawyering.</strong></h1>
+    <p class="lhero-sub">The Bar gives every solo attorney the same intake tools, research capabilities, and practice infrastructure that Big Law pays $50,000/year for — in 60 seconds, not 4 hours.</p>
+    <p class="lhero-pain">Westlaw is $125+/month. CoCounsel is $150+/month. You're still using Google and copy-pasting into Word. There's a better way.</p>
     <div class="lhero-btns">
       <button class="btn-hero btn-hero-gold" onclick="showOB()">Get Started Free — No Card Required</button>
       <button class="btn-hero btn-hero-outline" onclick="demo()">See It In Action →</button>
@@ -592,7 +623,6 @@ body{background:var(--ink);color:var(--tp);font-family:'Instrument Sans',sans-se
       <span class="lhero-trust-item">No credit card</span>
       <span class="lhero-trust-item">Setup in 90 seconds</span>
       <span class="lhero-trust-item">All 50 states</span>
-      <span class="lhero-trust-item">Built for solo practitioners</span>
     </div>
   </section>
 
@@ -600,8 +630,8 @@ body{background:var(--ink);color:var(--tp);font-family:'Instrument Sans',sans-se
   <section class="lpain">
     <div class="lpain-inner">
       <div class="lpain-head">
-        <div class="lpain-label">The gap no one closed</div>
-        <div class="lpain-title">Solo attorneys carry a full practice<br>with tools built for a paralegal team.</div>
+        <div class="lpain-label">The problem</div>
+        <div class="lpain-title">Solo attorneys spend 40–60% of their day<br>on work that doesn't bill.</div>
       </div>
       <div class="lpain-grid">
         <div class="lpain-item">
@@ -609,20 +639,20 @@ body{background:var(--ink);color:var(--tp);font-family:'Instrument Sans',sans-se
           <div class="lpain-a">Drafting the engagement letter, building the deadline calendar, writing the case summary, creating the checklist — all manual. All unbillable. <strong>The Bar does all four in 60 seconds.</strong></div>
         </div>
         <div class="lpain-item">
-          <div class="lpain-q">Legal research tools are priced for firms with 40 attorneys. You have one.</div>
-          <div class="lpain-a">Traditional legal research providers charge $125–$300/month per seat — a pricing structure designed for enterprise firms to absorb as overhead, never calibrated for a solo practice. <strong>The Bar's Legal Researcher delivers cited, jurisdictionally-aligned preliminary research memos on any legal question. Free.</strong></div>
+          <div class="lpain-q">You can't afford Westlaw. So you rely on Google and hope.</div>
+          <div class="lpain-a">Big firms pay $125+/month per attorney for legal research. Solo attorneys skip it or hope their memory is right. <strong>The Bar's Legal Researcher gives you cited, structured research on any question, free.</strong></div>
         </div>
         <div class="lpain-item">
           <div class="lpain-q">Every motion, demand letter, and deposition prep is written from scratch.</div>
           <div class="lpain-a">You're reinventing the wheel on every case. Your time is worth $300–$500/hour. Writing a motion to dismiss should not take 4 hours. <strong>The Bar drafts it in 90 seconds, tailored to your matter.</strong></div>
         </div>
         <div class="lpain-item">
-          <div class="lpain-q">Statute of limitations errors are the #1 cause of malpractice claims — and the system offers solo attorneys no safety net.</div>
-          <div class="lpain-a">BigLaw has docketing teams, tickler systems, and three layers of deadline review. Solo attorneys have a calendar and their memory. <strong>The Bar calculates every deadline automatically at intake and surfaces them on your dashboard every single day.</strong></div>
+          <div class="lpain-q">You've never missed a SOL — but you've come close. And that terrifies you.</div>
+          <div class="lpain-a">Statute of limitations errors are the #1 cause of malpractice claims against solo attorneys. One missed deadline ends a career. <strong>The Bar auto-calculates every deadline from the moment of intake.</strong></div>
         </div>
         <div class="lpain-item">
-          <div class="lpain-q">A missed conflict is a bar complaint. Enterprise conflict-check software costs more than some attorneys' monthly rent.</div>
-          <div class="lpain-a">Large firm practice management systems include automated conflict screening as standard. For solo practitioners, that same protection costs $200+/month as a standalone service. <strong>The Bar screens every new client against your full matter history at intake. Automatically. Free.</strong></div>
+          <div class="lpain-q">Conflict checks are manual name searches in a spreadsheet — if you even do them.</div>
+          <div class="lpain-a">Most solos run a quick mental check and hope. One undiscovered conflict, one bar complaint, one disqualification — career risk. <strong>The Bar screens every new client against your entire matter history automatically.</strong></div>
         </div>
         <div class="lpain-item">
           <div class="lpain-q">You have 8 different tools, 6 subscriptions, and still feel like you're behind.</div>
@@ -634,7 +664,7 @@ body{background:var(--ink);color:var(--tp);font-family:'Instrument Sans',sans-se
 
   <!-- SOLUTION BAR -->
   <section class="lsolbar">
-    <div class="lsolbar-text">The Bar is a proprietary practice-enablement interface built <em>exclusively</em> for the solo practitioner — not a stripped-down enterprise product, not a feature-limited derivative of a legacy system. Every workflow was architected from the ground up for the operational realities of a modern solo practice.</div>
+    <div class="lsolbar-text">The Bar is the first platform built <em>exclusively</em> for solo and small-firm attorneys — not a watered-down version of enterprise software. Every tool was built for the way you actually practice.</div>
   </section>
 
   <!-- FEATURES -->
@@ -646,32 +676,32 @@ body{background:var(--ink);color:var(--tp);font-family:'Instrument Sans',sans-se
     </div>
     <div class="feat-grid">
       <div class="feat">
-        <div class="feat-header"><div class="feat-n">01 — Intake</div><span class="feat-time">avg. ~60 sec</span></div>
+        <div class="feat-header"><div class="feat-n">01 — Intake</div><span class="feat-time">~60 sec</span></div>
         <div class="feat-t">AI Matter Package</div>
-        <div class="feat-d">Enter client name and situation. Walk out with a complete case summary memo, full engagement letter with e-sign, jurisdiction-specific deadline calendar, and a 15-item 30-day action checklist. What used to take 3 hours completes in an average processing time of under 60 seconds.</div>
+        <div class="feat-d">Enter client name and situation. Walk out with a complete case summary memo, full engagement letter with e-sign, jurisdiction-specific deadline calendar, and a 15-item 30-day action checklist. What used to take 3 hours takes 60 seconds.</div>
       </div>
       <div class="feat">
-        <div class="feat-header"><div class="feat-n">02 — Research</div><span class="feat-time">avg. ~2 min</span></div>
+        <div class="feat-header"><div class="feat-n">02 — Research</div><span class="feat-time">~2 min</span></div>
         <div class="feat-t">Legal Researcher</div>
-        <div class="feat-d">Ask any legal question in plain language. Get a structured research memo with case citations, majority/minority rules, jurisdiction-specific analysis, and a clear strategic conclusion. Jurisdictionally-aligned preliminary research. The price of zero.</div>
+        <div class="feat-d">Ask any legal question in plain language. Get a structured research memo with case citations, majority/minority rules, jurisdiction-specific analysis, and a clear strategic conclusion. The quality of a Westlaw search. The price of zero.</div>
       </div>
       <div class="feat">
-        <div class="feat-header"><div class="feat-n">03 — Drafting</div><span class="feat-time">avg. ~90 sec</span></div>
+        <div class="feat-header"><div class="feat-n">03 — Drafting</div><span class="feat-time">~90 sec</span></div>
         <div class="feat-t">Motion & Pleading Drafter</div>
         <div class="feat-d">Select from 12 document types — demand letters, motions to dismiss, discovery responses, trial briefs, and more. Choose your tone. Link to a matter. Get a complete, court-ready draft tailored to your specific case facts.</div>
       </div>
       <div class="feat">
-        <div class="feat-header"><div class="feat-n">04 — Trial Prep</div><span class="feat-time">avg. ~3 min</span></div>
+        <div class="feat-header"><div class="feat-n">04 — Trial Prep</div><span class="feat-time">~3 min</span></div>
         <div class="feat-t">Deposition Prep Kit</div>
         <div class="feat-d">Enter the witness and your goal. Get 10 opening questions, 25 targeted core questions, 8 commitment/trap questions, documents to introduce, objections to anticipate, and a full strategy memorandum. What used to take half a day.</div>
       </div>
       <div class="feat">
-        <div class="feat-header"><div class="feat-n">05 — Review</div><span class="feat-time">avg. ~2 min</span></div>
+        <div class="feat-header"><div class="feat-n">05 — Review</div><span class="feat-time">~2 min</span></div>
         <div class="feat-t">Document Analyzer</div>
         <div class="feat-d">Paste any contract, lease, settlement agreement, or pleading. Get a risk rating, flagged issues by severity, missing clauses, negotiation points, and a clear recommendation. Never sign off on a document you haven't fully analyzed.</div>
       </div>
       <div class="feat">
-        <div class="feat-header"><div class="feat-n">06 — Valuation</div><span class="feat-time">avg. ~1 min</span></div>
+        <div class="feat-header"><div class="feat-n">06 — Valuation</div><span class="feat-time">~1 min</span></div>
         <div class="feat-t">Settlement Calculator</div>
         <div class="feat-d">Input practice area, liability strength, and special damages. Get a low/mid/high value range with factor-by-factor breakdown, comparable case analysis, and a negotiation strategy. Know your number before you pick up the phone.</div>
       </div>
@@ -739,8 +769,8 @@ body{background:var(--ink);color:var(--tp);font-family:'Instrument Sans',sans-se
           <tr>
             <th>Capability</th>
             <th class="th-us">The Bar</th>
-            <th>Enterprise Legal Research</th>
-            <th>Legacy Practice Management</th>
+            <th>Westlaw / LexisNexis</th>
+            <th>Clio / Practice Mgmt</th>
             <th>Nothing / Manual</th>
           </tr>
         </thead>
@@ -755,14 +785,14 @@ body{background:var(--ink);color:var(--tp);font-family:'Instrument Sans',sans-se
           <tr>
             <td class="comp-feature">Legal Research w/ Citations</td>
             <td class="comp-yes comp-row-us">✓ Included</td>
-            <td class="comp-partial">~ $125–300/mo per seat</td>
+            <td class="comp-partial">~ $125–300/mo</td>
             <td class="comp-no">✗ Not available</td>
-            <td class="comp-no">✗ Google, memory, luck</td>
+            <td class="comp-no">✗ Google + hope</td>
           </tr>
           <tr class="comp-row-us">
             <td class="comp-feature">Motion / Pleading Drafting</td>
             <td class="comp-yes">✓ Included</td>
-            <td class="comp-partial">~ Add-on, $150+/mo</td>
+            <td class="comp-partial">~ CoCounsel add-on $150/mo</td>
             <td class="comp-no">✗ Not available</td>
             <td class="comp-no">✗ Hours from scratch</td>
           </tr>
@@ -785,7 +815,7 @@ body{background:var(--ink);color:var(--tp);font-family:'Instrument Sans',sans-se
             <td class="comp-yes comp-row-us">✓ Included</td>
             <td class="comp-partial">~ Buried in platform</td>
             <td class="comp-partial">~ Manual calendar entry</td>
-            <td class="comp-no">✗ Manual lookup, no safeguard</td>
+            <td class="comp-no">✗ Memory + Google</td>
           </tr>
           <tr class="comp-row-us">
             <td class="comp-feature">Conflict Check (Auto)</td>
@@ -837,17 +867,17 @@ body{background:var(--ink);color:var(--tp);font-family:'Instrument Sans',sans-se
       <div class="testi-grid">
         <div class="testi">
           <div class="testi-stars">★★★★★</div>
-          <div class="testi-text">"I ran intake on a new PI client between meetings. By the time I sat back down, I had a complete case summary memo, a signed engagement letter, and every deadline on my calendar. What used to consume a Monday morning took eleven minutes."</div>
+          <div class="testi-text">"I ran intake on a new PI client during lunch. By the time I got back to my desk, I had a full case summary, a signed engagement letter, and every deadline already calendared. I used to spend half my Monday on that."</div>
           <div class="testi-meta"><span class="testi-name">J. Whitmore</span><br>Personal Injury · California</div>
         </div>
         <div class="testi">
           <div class="testi-stars">★★★★★</div>
-          <div class="testi-text">"I was skeptical. The research memo it produced on a complex preemption issue was more organized and actionable than anything I had previously sourced from a traditional legal research provider at three times the cost. I've used it on every case since."</div>
+          <div class="testi-text">"The legal researcher alone is worth it. I used to pay $125/month for Westlaw and still felt like I was missing things. The Bar finds the same cases, explains the circuit splits, and tells me exactly what it means for my case."</div>
           <div class="testi-meta"><span class="testi-name">M. Chen</span><br>Family Law · New York</div>
         </div>
         <div class="testi">
           <div class="testi-stars">★★★★★</div>
-          <div class="testi-text">"The deposition prep kit is extraordinary. Before deposing the treating physician in a PI case, it produced opening questions, targeted core questions, commitment traps, and a full strategy memo — work I would have done by hand, at midnight, the night before trial."</div>
+          <div class="testi-text">"The deposition prep kit saved me 4 hours on my last case. It knew the exact questions to ask the treating physician, flagged three inconsistencies I would have missed, and gave me a strategy memo before I walked in."</div>
           <div class="testi-meta"><span class="testi-name">R. Torres</span><br>Employment · Texas</div>
         </div>
       </div>
@@ -857,20 +887,20 @@ body{background:var(--ink);color:var(--tp);font-family:'Instrument Sans',sans-se
   <!-- FINAL CTA -->
   <section class="lfinal">
     <div class="lfinal-label">Ready to start</div>
-    <h2>You built this practice<br>from nothing. <em>Now run it<br>like you have a team.</em></h2>
-    <p class="lfinal-sub">Setup takes 90 seconds. Every AI tool immediately available. No credit card, no contract, no catch. The Bar exists because solo attorneys deserve infrastructure as powerful as the cases they take — and far better than what they've been given.</p>
+    <h2>Your practice. Elevated.<br><em>Starting right now.</em></h2>
+    <p class="lfinal-sub">Setup takes 90 seconds. No credit card. No commitment. Every tool immediately available. The only question is how many hours you want to keep spending on work that doesn't bill.</p>
     <div class="lhero-btns">
       <button class="btn-hero btn-hero-gold" onclick="showOB()">Start Free — No Credit Card</button>
       <button class="btn-hero btn-hero-outline" onclick="demo()">Explore the Demo First →</button>
     </div>
-    <div class="lfinal-risk">Free forever plan · No credit card · No contract · Nothing to cancel · Your data stays in your browser</div>
+    <div class="lfinal-risk">No credit card · No contract · Free forever plan · Cancel nothing</div>
   </section>
 
   <!-- FOOTER -->
   <footer class="lfooter">
-    <span>© 2026 The Bar — Legal Practice Enablement Platform</span>
+    <span>© 2026 The Bar — AI Legal Practice Platform</span>
     <span style="display:flex;gap:20px;">
-      <span>Free for every solo &amp; small-firm attorney</span>
+      <span>Built for solo &amp; small firm attorneys</span>
       <span>AI content requires attorney review · Not a law firm</span>
     </span>
   </footer>
@@ -917,7 +947,7 @@ body{background:var(--ink);color:var(--tp);font-family:'Instrument Sans',sans-se
       <div class="ob-card">
         <div style="font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--parchment);margin-bottom:14px;">You're all set.</div>
         <div id="ob-preview" style="font-size:11px;color:var(--ts);line-height:2;font-family:'DM Mono',monospace;"></div>
-        <div style="margin-top:16px;padding:12px;background:var(--s3);border:1px solid var(--border);font-size:10px;color:var(--tm);font-family:'DM Mono',monospace;line-height:1.7;">Clerical AI Output — Not Legal Advice. All output requires mandatory independent attorney verification under Model Rule 1.1 (Competence). The Bar is a practice-enablement interface, not a law firm. No attorney-client relationship is created.</div>
+        <div style="margin-top:16px;padding:12px;background:var(--s3);border:1px solid var(--border);font-size:10px;color:var(--tm);font-family:'DM Mono',monospace;line-height:1.7;">AI-generated content requires attorney review. The Bar is not a law firm and does not provide legal advice.</div>
         <div class="ob-act" style="margin-top:14px;"><button class="btn btn-ghost" onclick="obBack(2)">← Back</button><button class="btn btn-gold" onclick="finishOB()">Enter The Bar →</button></div>
       </div>
     </div>
@@ -956,11 +986,17 @@ body{background:var(--ink);color:var(--tp);font-family:'Instrument Sans',sans-se
     <div class="sbi" onclick="nav('analytics')" id="nav-analytics"><svg class="sbi-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 10l3-3 3 3 3-6 3 4"/></svg>Analytics</div>
     <div class="sbi" onclick="nav('settings')" id="nav-settings"><svg class="sbi-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="2"/><path d="M7 1v2M7 11v2M1 7h2M11 7h2M2.9 2.9l1.4 1.4M9.7 9.7l1.4 1.4M2.9 11.1l1.4-1.4M9.7 4.3l1.4-1.4"/></svg>Settings</div>
    </nav>
-   <div class="sb-bot">Plan: <span>Free</span><br>Matters: <span id="sb-cnt">0</span><br>The Bar v6.0</div>
+   <div class="sb-bot">Plan: <span id="sb-plan-badge">Free</span><br>Matters: <span id="sb-cnt">0</span><br><span style="cursor:pointer;color:var(--gold-dim);" id="sb-upgrade-link" onclick="showPaywall('upgrade')">Upgrade →</span></div>
   </aside>
 
   <!-- MAIN AREA -->
   <div class="ma">
+   <!-- USAGE BAR -->
+   <div class="usage-bar-wrap" id="usage-bar" style="display:none;">
+     <span id="usage-bar-text">0 / 5 free matters used</span>
+     <div class="usage-bar-track"><div class="usage-bar-fill" id="usage-bar-fill" style="width:0%"></div></div>
+     <span id="usage-bar-cta" style="cursor:pointer;color:var(--gold-dim);white-space:nowrap;" onclick="showPaywall('upgrade')">Upgrade →</span>
+   </div>
 
    <!-- DASHBOARD -->
    <div class="pg active" id="page-dashboard">
@@ -1277,17 +1313,17 @@ body{background:var(--ink);color:var(--tp);font-family:'Instrument Sans',sans-se
    <div class="pg" id="page-settings">
     <div class="ph"><div class="ph-l"><div class="ph-title">Settings</div><div class="ph-sub">Firm & account</div></div></div>
     <div class="pb">
-     <div class="fs" id="apikey-section"><div class="fs-t">Processing Configuration <span style="font-family:'DM Mono',monospace;font-size:8px;color:var(--tm);border:1px solid var(--border);padding:2px 6px;margin-left:8px;">Local / Preview Mode</span></div>
-      <div style="font-size:11px;color:var(--ts);margin-bottom:14px;line-height:1.7;">Select the processing model tier and enter your API credentials. On deployed instances, credentials are managed server-side via environment variables — individual users require no configuration. User-supplied credentials are stored locally in your browser only and serve as a per-device fallback.</div>
+     <div class="fs" id="apikey-section" style="display:none;"><div class="fs-t">AI Provider <span style="font-family:'DM Mono',monospace;font-size:8px;color:var(--tm);border:1px solid var(--border);padding:2px 6px;margin-left:8px;"><span id='api-mode-badge'>Detecting…</span></span></div>
+      <div style="font-size:11px;color:var(--ts);margin-bottom:14px;line-height:1.7;">Choose your AI provider and enter an API key. Keys are stored only in your browser and sent directly to the provider — never to any third party.</div>
       <div class="fg" style="margin-bottom:12px;">
        <div class="f sp2"><label>AI Provider</label>
         <select id="provider-select" onchange="onProviderChange(this.value)" style="background:var(--s3);border:1px solid var(--border);color:var(--tp);font-family:'Instrument Sans',sans-serif;font-size:12px;padding:7px 10px;outline:none;width:100%;cursor:pointer;">
-         <option value="anthropic">High-Performance Model · Standard</option>
-         <option value="openai">High-Performance Model · Extended</option>
-         <option value="gemini">High-Performance Model · Research</option>
+         <option value="anthropic">Anthropic — Claude Sonnet 4</option>
+         <option value="openai">OpenAI — GPT-4o</option>
+         <option value="gemini">Google — Gemini 1.5 Pro</option>
         </select>
        </div>
-       <div class="f sp2"><label id="apikey-label">Processing Credential</label><input type="password" id="apikey-input" placeholder="Enter processing credential…" autocomplete="off"></div>
+       <div class="f sp2"><label id="apikey-label">API Key</label><input type="password" id="apikey-input" placeholder="sk-ant-…" autocomplete="off"></div>
       </div>
       <div style="display:flex;gap:8px;margin-top:10px;">
        <button class="btn btn-gold btn-sm" onclick="saveApiKey()">Save Key</button>
@@ -1313,13 +1349,52 @@ body{background:var(--ink);color:var(--tp);font-family:'Instrument Sans',sans-se
        <button class="btn btn-red" onclick="clearAll()">Clear Data</button>
       </div>
      </div>
-     <div class="fs"><div class="fs-t" style="margin-bottom:8px;">About</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--tm);letter-spacing:0.06em;line-height:2.2;">The Bar v6.0 · Free for solo &amp; small-firm attorneys<br><br>The Bar is a proprietary practice-enablement interface. It utilizes third-party API processing as a sub-processor only; all work product generated remains the intellectual property of the licensed user, subject to their independent professional review and ethical obligations under the applicable State Bar Rules of Professional Conduct.<br><br>Technical Infrastructure: The Bar facilitates high-velocity clerical workflows via encrypted API tunnels utilizing advanced neural processing. The Bar does not claim ownership of user-generated work product, nor does it assume the ethical duties of the licensed user. All output constitutes clerical drafts only — not legal advice. Users assume all responsibility for work product accuracy under Model Rule 1.1 (Competence) and all other applicable professional obligations.<br><br>Not a law firm · No attorney-client relationship is created · No legal advice is provided<br>© 2026 The Bar</div></div>
+     <div class="fs"><div class="fs-t" style="margin-bottom:8px;">About</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--tm);letter-spacing:0.06em;line-height:2;">The Bar v7.0 · AI content requires attorney review before use<br>Not a law firm · No attorney-client relationship is created<br>Powered by Claude (Anthropic) · Built for solo &amp; small firm attorneys<br>© 2026 The Bar</div></div>
     </div>
    </div>
 
   </div><!-- /ma -->
  </div><!-- /aw -->
 </div><!-- /app -->
+
+<!-- ══ PAYWALL MODAL ══ -->
+<div id="paywall-modal" class="paywall-overlay" style="display:none;">
+  <div class="paywall-box">
+    <button class="paywall-dismiss" onclick="dismissPaywall()" title="Close">✕</button>
+    <div class="paywall-inner">
+      <div class="paywall-icon">⚖</div>
+      <div class="paywall-title">You've hit your <em>free limit.</em></div>
+      <div style="font-size:13px;color:var(--ts);line-height:1.7;margin-bottom:4px;">You've run <strong id="pw-matter-count" style="color:var(--parchment);">5</strong> complete intakes and saved roughly <strong id="pw-hours-saved" style="color:var(--gold);">25 hours</strong> of unbillable admin work. That's the value of The Bar.</div>
+      <div class="paywall-saved">
+        <span>Estimated hours saved</span>
+        <span class="paywall-saved-val" id="pw-hours-big">25 hrs</span>
+      </div>
+      <div class="paywall-tiers">
+        <div class="paywall-tier featured" onclick="selectTier('pro')">
+          <div class="paywall-tier-badge">Most Popular</div>
+          <div class="paywall-tier-name">Pro</div>
+          <div class="paywall-tier-price">$99</div>
+          <div class="paywall-tier-period">/month</div>
+          <div class="paywall-tier-features">Unlimited matters<br>All AI tools<br>Client portal<br>Priority support</div>
+          <button class="paywall-cta" style="margin-top:12px;" onclick="upgradePro()">Upgrade to Pro →</button>
+        </div>
+        <div class="paywall-tier" onclick="selectTier('byok')" id="byok-tier">
+          <div class="paywall-tier-name">Tech Tier</div>
+          <div class="paywall-tier-price">$29</div>
+          <div class="paywall-tier-period">/month + your key</div>
+          <div class="paywall-tier-features">Unlimited matters<br>All AI tools<br>Bring your own API key<br>Pay only for usage</div>
+          <button class="paywall-cta-sec" style="margin-top:12px;" onclick="showByokField()">Use My Own Key →</button>
+        </div>
+      </div>
+      <div class="paywall-byok" id="byok-field">
+        <div class="paywall-byok-title">Enter your Anthropic API Key</div>
+        <input type="password" id="pw-apikey-input" placeholder="sk-ant-…" autocomplete="off">
+        <button class="paywall-cta" onclick="activateByok()">Activate & Continue →</button>
+        <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--tm);margin-top:8px;line-height:1.7;">Your key is stored locally in your browser and sent only to Anthropic. You still pay $29/mo to support The Bar platform.</div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
 // ════════════ SECURITY BOOTSTRAP ════════════
@@ -1364,88 +1439,114 @@ let resHistory = [];
 (function(){const old=localStorage.getItem('tb_local_key');if(old&&!localStorage.getItem('tb_apikey_anthropic')){localStorage.setItem('tb_apikey_anthropic',old);localStorage.removeItem('tb_local_key');}})();
 
 // ════════════ API ENDPOINT ════════════
-// Detect any proxy-backed deployment (Vercel, Railway, custom domain)
-const IS_PROXIED = (() => {
-  const h = location.hostname;
-  return h.endsWith('.vercel.app') ||
-         h.endsWith('.railway.app') ||
-         (h !== 'localhost' && h !== '127.0.0.1' && !h.startsWith('192.168.') && !h.startsWith('10.'));
-})();
-const IS_VERCEL = IS_PROXIED; // alias kept for backward-compat
+// IS_SERVER_PROXY: true whenever the /api/claude serverless route is available.
+// This covers Vercel (*.vercel.app + custom domains), Railway, Render, etc.
+// We probe once at boot and cache the result.
+let IS_SERVER_PROXY = false;
+let _proxyProbed = false;
+async function _probeProxy() {
+  if (_proxyProbed) return;
+  _proxyProbed = true;
+  // localhost/file:// never have a server proxy
+  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:') return;
+  try {
+    // HEAD request with no body — proxy returns 405 (exists) vs network fail (absent)
+    const r = await fetch('/api/claude', { method: 'HEAD' });
+    IS_SERVER_PROXY = r.status !== 404;
+  } catch { IS_SERVER_PROXY = false; }
+}
 
 // Multi-provider support: anthropic | openai | gemini
-let _provider  = localStorage.getItem('tb_provider') || 'gemini';
+let _provider  = localStorage.getItem('tb_provider') || 'anthropic';
 let _apiKey    = localStorage.getItem('tb_apikey_' + _provider) || '';
 
 // Provider configs
 const PROVIDERS = {
   anthropic: {
-    label: 'High-Performance Model (Standard)',
-    placeholder: '…',
+    label: 'Anthropic (Claude)',
+    placeholder: 'sk-ant-…',
     validate: k => k.startsWith('sk-ant-'),
-    model: 'claude-sonnet-4-6',
+    model: 'claude-sonnet-4-20250514',
   },
   openai: {
     label: 'OpenAI (GPT-4o)',
-    placeholder: '…',
-    validate: k => k.startsWith('sk-') && !k.startsWith('sk-ant-'),
+    placeholder: 'sk-…',
+    validate: k => k.startsWith('sk-'),
     model: 'gpt-4o',
   },
   gemini: {
     label: 'Google Gemini',
-    placeholder: '…',
+    placeholder: 'AIza…',
     validate: k => k.length > 10,
-    model: 'gemini-2.0-flash',
+    model: 'gemini-1.5-pro',
   },
 };
 
-async function callClaude(body) {
-  _checkRateLimit(); // rate limit before any network call
+// ── Token optimizer appended to every system prompt ──────────────────────
+const TOKEN_OPTIMIZER = `
 
-  if (IS_PROXIED) {
-    // Route ALL providers through server-side proxy
-    const headers = {
-      'Content-Type': 'application/json',
-      'X-Provider': _provider,
-    };
-    if (_apiKey) headers['X-User-Key'] = _apiKey;
+CRITICAL OUTPUT DIRECTIVES:
+You are operating in a high-throughput, automated legal environment.
+1. ZERO PREAMBLE: Never include introductory phrases ("Here is the summary," "Certainly," "I can help with that").
+2. ZERO POSTSCRIPT: No closing remarks, offers for further assistance, or disclaimers after the output.
+3. MAXIMAL BREVITY: Convey full legal analysis with absolute conciseness. Use structured formatting (headers, bullets, bold) to replace verbose prose.
+4. STRICT FORMAT COMPLIANCE: Output strictly the exact requested format (JSON, Memorandum, Letter, Checklist). Any conversational filler causes a critical system failure.`;
+
+async function callClaude(body) {
+  _checkRateLimit();
+
+  // Inject token optimizer into every system prompt
+  if (body.system) {
+    body = { ...body, system: body.system + TOKEN_OPTIMIZER };
+  }
+
+  // Check freemium gate for matter-generating calls — strip flag before sending
+  const isMatterGen = !!body._isMatterGen;
+  if (isMatterGen) {
+    const { _isMatterGen, ...cleanBody } = body;
+    body = cleanBody;
+    const gate = freemiumGate();
+    if (gate === 'blocked') { showPaywall('limit'); throw new Error('Free limit reached.'); }
+  }
+
+  // Probe proxy on first AI call
+  await _probeProxy();
+
+  if (IS_SERVER_PROXY) {
     const res = await fetch('/api/claude', {
       method: 'POST',
-      headers,
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     });
     if (!res.ok) {
-      let errMsg = `Proxy error ${res.status}`;
-      try { const e = await res.json(); errMsg = e.error || errMsg; } catch {}
-      throw new Error(errMsg);
+      let errMsg = `Server error ${res.status}`;
+      try { const j = await res.json(); errMsg = j.error || errMsg; } catch { try { errMsg = await res.text(); } catch {} }
+      throw new Error(errMsg.slice(0, 300));
     }
     return res.json();
   }
 
-  // Ensure we have a key for the current provider
+  // ── BYOK / local mode (Tech Tier users who've added their own key) ──
   if (!_apiKey) {
-    const prov = PROVIDERS[_provider];
-    _apiKey = (prompt(`Enter your ${prov.label} API key:\n(Stored locally in your browser — never sent anywhere except ${prov.label.split(' ')[0]})`) || '').trim();
-    if (!_apiKey) throw new Error('No API key provided.');
-    localStorage.setItem('tb_apikey_' + _provider, _apiKey);
+    // No key and no proxy — show the paywall with BYOK option
+    showPaywall('nokey');
+    throw new Error('No API key — please upgrade or add your key.');
   }
 
-  // Helper: sanitize error text so key never appears in thrown messages or console
-  const safeErr=(text)=>text.replace(_apiKey,'[REDACTED]');
+  const safeErr = (text) => _apiKey ? text.replace(_apiKey, '[REDACTED]') : text;
 
   if (_provider === 'anthropic') {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': _apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      headers: { 'Content-Type': 'application/json', 'x-api-key': _apiKey, 'anthropic-version': '2023-06-01' },
       body: JSON.stringify({ ...body, model: body.model || PROVIDERS.anthropic.model }),
     });
     if (!res.ok) {
       const text = await res.text();
-      if (res.status === 401) { _apiKey = ''; localStorage.removeItem('tb_apikey_anthropic'); toast('Invalid processing credential — cleared.', 'err'); }
-      throw new Error(`Processing API error ${res.status}: ${safeErr(text).slice(0,200)}`);
+      if (res.status === 401) { _apiKey = ''; localStorage.removeItem('tb_apikey_anthropic'); toast('Invalid API key — cleared.', 'err'); }
+      throw new Error(`API ${res.status}: ${safeErr(text).slice(0, 200)}`);
     }
     return res.json();
-
   } else if (_provider === 'openai') {
     const msgs = [];
     if (body.system) msgs.push({ role: 'system', content: body.system });
@@ -1457,46 +1558,148 @@ async function callClaude(body) {
     });
     if (!res.ok) {
       const text = await res.text();
-      if (res.status === 401) { _apiKey = ''; localStorage.removeItem('tb_apikey_openai'); toast('Invalid processing credential — cleared.', 'err'); }
-      throw new Error(`Processing API error ${res.status}: ${safeErr(text).slice(0,200)}`);
+      if (res.status === 401) { _apiKey = ''; localStorage.removeItem('tb_apikey_openai'); toast('Invalid key — cleared.', 'err'); }
+      throw new Error(`API ${res.status}: ${safeErr(text).slice(0, 200)}`);
     }
     const data = await res.json();
     return { content: [{ type: 'text', text: data.choices?.[0]?.message?.content || '' }] };
-
   } else if (_provider === 'gemini') {
     const parts = [];
     if (body.system) parts.push({ text: body.system + '\n\n' });
-    (body.messages || []).forEach(m => parts.push({ text: (m.role === 'user' ? '' : 'Assistant: ') + m.content }));
-    const model = PROVIDERS.gemini.model;
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${_apiKey}`, {
+    (body.messages || []).forEach(m => parts.push({ text: m.content }));
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${PROVIDERS.gemini.model}:generateContent?key=${_apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ contents: [{ parts }], generationConfig: { maxOutputTokens: body.max_tokens || 4096 } }),
     });
     if (!res.ok) {
       const text = await res.text();
-      if (res.status === 400 || res.status === 403) { _apiKey = ''; localStorage.removeItem('tb_apikey_gemini'); toast('Invalid processing credential — cleared.', 'err'); }
-      throw new Error(`Processing API error ${res.status}: ${safeErr(text).slice(0,200)}`);
+      if (res.status === 400 || res.status === 403) { _apiKey = ''; localStorage.removeItem('tb_apikey_gemini'); toast('Invalid key — cleared.', 'err'); }
+      throw new Error(`API ${res.status}: ${safeErr(text).slice(0, 200)}`);
     }
     const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    return { content: [{ type: 'text', text }] };
+    return { content: [{ type: 'text', text: data.candidates?.[0]?.content?.parts?.[0]?.text || '' }] };
   }
 
   throw new Error('Unknown provider: ' + _provider);
 }
 
-function save(){localStorage.setItem('tb4_matters',JSON.stringify(matters));localStorage.setItem('tb4_firm',JSON.stringify(firm));localStorage.setItem('tb4_time',JSON.stringify(timeEntries));updateBadge();}
+function save(){localStorage.setItem('tb4_matters',JSON.stringify(matters));localStorage.setItem('tb4_firm',JSON.stringify(firm));localStorage.setItem('tb4_time',JSON.stringify(timeEntries));updateBadge();updateUsageBar();}
+
+// ════════════ FREEMIUM ENGINE ════════════
+const FREE_MATTER_LIMIT = 5;
+const HOURS_PER_MATTER  = 5; // estimated hours saved per matter generated
+
+function getFreemiumState(){
+  return JSON.parse(localStorage.getItem('tb_freemium')||'{"plan":"free","mattersGenerated":0}');
+}
+function setFreemiumState(s){localStorage.setItem('tb_freemium',JSON.stringify(s));}
+
+function isPro(){
+  const s=getFreemiumState();
+  return s.plan==='pro'||s.plan==='byok'||!!_apiKey;
+}
+
+function freemiumGate(){
+  if(isPro())return'ok';
+  const s=getFreemiumState();
+  if(s.mattersGenerated>=FREE_MATTER_LIMIT)return'blocked';
+  return'ok';
+}
+
+function recordMatterGenerated(){
+  if(isPro())return;
+  const s=getFreemiumState();
+  s.mattersGenerated=(s.mattersGenerated||0)+1;
+  setFreemiumState(s);
+  updateUsageBar();
+  loadSidebar();
+  // If they just hit the limit, show the paywall after a short delay
+  if(s.mattersGenerated>=FREE_MATTER_LIMIT){
+    setTimeout(()=>showPaywall('limit'),2000);
+  }
+}
+
+function updateUsageBar(){
+  const bar=document.getElementById('usage-bar');
+  if(!bar)return;
+  if(isPro()){bar.style.display='none';return;}
+  const s=getFreemiumState();
+  const used=s.mattersGenerated||0;
+  const pct=Math.min((used/FREE_MATTER_LIMIT)*100,100);
+  const fill=document.getElementById('usage-bar-fill');
+  const text=document.getElementById('usage-bar-text');
+  const cta=document.getElementById('usage-bar-cta');
+  bar.style.display='flex';
+  if(fill){fill.style.width=pct+'%';fill.className='usage-bar-fill'+(pct>=100?' full':pct>=60?' warn':'');}
+  if(text)text.textContent=`${used} / ${FREE_MATTER_LIMIT} free matters used`;
+  if(cta){cta.style.display=used>0?'block':'none';}
+}
+
+function showPaywall(reason){
+  const s=getFreemiumState();
+  const used=s.mattersGenerated||0;
+  const hoursSaved=used*HOURS_PER_MATTER;
+  const el=document.getElementById('paywall-modal');
+  const cnt=document.getElementById('pw-matter-count');
+  const hrs=document.getElementById('pw-hours-saved');
+  const hrsBig=document.getElementById('pw-hours-big');
+  if(cnt)cnt.textContent=used;
+  if(hrs)hrs.textContent=hoursSaved+' hours';
+  if(hrsBig)hrsBig.textContent=hoursSaved+' hrs';
+  if(el)el.style.display='flex';
+  document.getElementById('byok-field').style.display='none';
+}
+
+function dismissPaywall(){
+  const el=document.getElementById('paywall-modal');
+  if(el)el.style.display='none';
+}
+
+function selectTier(t){
+  document.querySelectorAll('.paywall-tier').forEach(el=>el.classList.remove('featured'));
+  const map={pro:'paywall-tier',byok:'byok-tier'};
+  document.getElementById(map[t]||'byok-tier')?.classList.add('featured');
+}
+
+function upgradePro(){
+  // In production: redirect to Stripe checkout. For beta: show contact.
+  toast('Redirecting to checkout…','info');
+  setTimeout(()=>{
+    window.open('mailto:hello@thebar.app?subject=Pro%20Upgrade%20Request&body=I%20would%20like%20to%20upgrade%20to%20The%20Bar%20Pro%20($99/mo).%20Please%20send%20me%20a%20payment%20link.','_blank');
+  },400);
+}
+
+function showByokField(){
+  document.getElementById('byok-field').style.display='block';
+  document.getElementById('pw-apikey-input')?.focus();
+}
+
+function activateByok(){
+  const val=(document.getElementById('pw-apikey-input')?.value||'').trim();
+  if(!val||!val.startsWith('sk-ant-')){toast('Enter a valid Anthropic key (sk-ant-…)','err');return;}
+  _apiKey=val;
+  _provider='anthropic';
+  localStorage.setItem('tb_apikey_anthropic',val);
+  localStorage.setItem('tb_provider','anthropic');
+  const s=getFreemiumState();
+  s.plan='byok';
+  setFreemiumState(s);
+  dismissPaywall();
+  updateUsageBar();
+  toast('API key activated. Unlimited access enabled.','ok');
+}
 function toast(msg,type='info'){const n=document.getElementById('notif');n.textContent=msg;n.className=`notif ${type} show`;setTimeout(()=>n.classList.remove('show'),2600);}
 
 // ════════════ ROUTING ════════════
 function showLanding(){document.getElementById('landing').style.display='flex';document.getElementById('onboarding').style.display='none';document.getElementById('app').style.display='none';document.getElementById('mob-header').style.display='none';}
 function showOB(){document.getElementById('landing').style.display='none';document.getElementById('onboarding').style.display='flex';document.getElementById('app').style.display='none';document.getElementById('mob-header').style.display='none';}
-function showApp(){document.getElementById('landing').style.display='none';document.getElementById('onboarding').style.display='none';document.getElementById('app').style.display='block';document.getElementById('mob-header').style.display='flex';loadSidebar();refreshDash();renderFirstUse();nav('dashboard');}
+function showApp(){document.getElementById('landing').style.display='none';document.getElementById('onboarding').style.display='none';document.getElementById('app').style.display='block';document.getElementById('mob-header').style.display='flex';loadSidebar();refreshDash();renderFirstUse();updateUsageBar();nav('dashboard');}
 function demo(){
   firm={name:'James R. Whitmore, Esq.',firmName:'Whitmore & Associates',state:'California',rate:350,practices:['Personal Injury','Family Law','Estate Planning']};
   if(!matters.length)matters=[{id:'d1',createdAt:new Date(Date.now()-7*86400000).toISOString(),status:'active',shared:false,clientFirst:'Margaret',clientLast:'Holloway',clientEmail:'mholloway@email.com',clientPhone:'(415) 555-0192',clientAddress:'842 Crane Ave, Oakland, CA 94601',attyName:'James R. Whitmore, Esq.',firmName:'Whitmore & Associates',jurisdiction:'California',feeStructure:'Contingency 33%',practice:'Personal Injury',matterTitle:'Holloway v. Meridian Insurance',incidentDate:'2025-11-14',description:'Client rear-ended at stop light on Telegraph Ave. Whiplash, lower back injury, missed 6 weeks work. Meridian disputing liability.',opposingParty:'Meridian Insurance Co.',knownDeadlines:'SOL 2 years from incident',estimatedValue:'$85,000–$200,000',additionalNotes:'Police report, 2 witnesses, medical records.',docs:{summary:'CASE SUMMARY\n\nMatter: Holloway v. Meridian Insurance Co.\nAttorney: James R. Whitmore, Esq.\nDate: '+new Date().toLocaleDateString()+'\n\nMs. Margaret Holloway sustained whiplash and lower back injuries in a rear-end collision on November 14, 2025 on Telegraph Avenue, Oakland, California. The at-fault driver\'s insurer, Meridian Insurance Company, is disputing liability by asserting comparative fault.\n\nUnder California\'s pure comparative fault doctrine, Ms. Holloway may recover damages reduced by any attributed percentage. Case strength depends on eyewitness credibility, police report, and medical causation.\n\nRecommended: Secure witness statements immediately, retain medical expert, send spoliation letter to Meridian, file demand after MMI.',letter:'ENGAGEMENT LETTER\n\nWhitmore & Associates\n'+new Date().toLocaleDateString()+'\n\nMs. Margaret Holloway\n842 Crane Ave, Oakland, CA 94601\n\nRe: Engagement — Personal Injury\n\nDear Ms. Holloway,\n\nWe are pleased to represent you in your personal injury claim. Our fee is contingent at 33% pre-complaint, 40% post-filing. You agree to cooperate fully and keep us informed of medical treatment.\n\nSincerely,\nJames R. Whitmore, Esq.',deadlinesRaw:'Statute of Limitations | 2 years from Nov 14, 2025 | HIGH\nSpoliation Letter | Within 10 days | HIGH\nWitness Statements | Within 14 days | HIGH\nMedical Records | Within 30 days | HIGH\nDemand Letter | After MMI (est. 6 months) | MEDIUM\nFile if Necessary | Before Nov 14, 2027 | MEDIUM\nCase Review | 90 days | LOW',checklist:'1. Obtain signed fee agreement\n2. Send spoliation letter to Meridian\n3. Request all medical records\n4. Obtain witness statements\n5. Order certified police report\n6. Enter all deadlines\n7. Run conflict check\n8. Send representation letter to Meridian\n9. Research Meridian litigation history\n10. Schedule 30-day client follow-up\n11. Identify accident reconstruction expert\n12. Photograph accident scene'},notes:'',timeLogged:0},{id:'d2',createdAt:new Date(Date.now()-2*86400000).toISOString(),status:'active',shared:false,clientFirst:'David',clientLast:'Chen',clientEmail:'dchen@gmail.com',clientPhone:'(510) 555-0344',clientAddress:'1201 Broadway, Oakland CA',attyName:'James R. Whitmore, Esq.',firmName:'Whitmore & Associates',jurisdiction:'California',feeStructure:'$4,500 flat',practice:'Estate Planning',matterTitle:'Chen Estate Plan',incidentDate:'',description:'Complete estate plan: will, trust, POA, healthcare directive. Home ~$900k, retirement accounts.',opposingParty:'',knownDeadlines:'No urgent deadlines',estimatedValue:'$4,500',additionalNotes:'Prefers revocable living trust.',docs:{summary:'Estate planning matter for David Chen. Complete plan including revocable living trust, pour-over will, durable POA, and advance healthcare directive.',letter:'Engagement letter pending generation.',deadlinesRaw:'Document Draft | 3 weeks | MEDIUM\nClient Review | 4 weeks | MEDIUM\nSigning Ceremony | 6 weeks | MEDIUM\nTrust Funding | After execution | LOW',checklist:'1. Collect full asset inventory\n2. Draft revocable living trust\n3. Draft pour-over will\n4. Draft durable POA\n5. Draft healthcare directive\n6. Schedule signing ceremony'},notes:'',timeLogged:0}];
   save();showApp();
+  toast('Demo loaded. Explore all features — demo matters don\'t count toward your free limit.','ok');
 }
 
 // ════════════ ONBOARDING ════════════
@@ -1531,7 +1734,24 @@ function nav(id){
   trackUsage(id);
   closeMobMenu();
 }
-function loadSidebar(){if(!firm)return;document.getElementById('sb-firm').textContent=firm.firmName||'—';document.getElementById('sb-atty').textContent=firm.name||'—';}
+function loadSidebar(){
+  if(!firm)return;
+  document.getElementById('sb-firm').textContent=firm.firmName||'—';
+  document.getElementById('sb-atty').textContent=firm.name||'—';
+  const s=getFreemiumState();
+  const badge=document.getElementById('sb-plan-badge');
+  const upgradeLink=document.getElementById('sb-upgrade-link');
+  if(badge){
+    if(s.plan==='pro'){badge.textContent='Pro';badge.style.color='var(--gold)';}
+    else if(s.plan==='byok'){badge.textContent='Tech Tier';badge.style.color='var(--gold-dim)';}
+    else{
+      const left=Math.max(0,FREE_MATTER_LIMIT-(s.mattersGenerated||0));
+      badge.textContent=`Free (${left} left)`;
+      badge.style.color=left===0?'var(--red)':left<=2?'var(--amber)':'var(--ts)';
+    }
+  }
+  if(upgradeLink)upgradeLink.style.display=isPro()?'none':'inline';
+}
 function prefillIntake(){
   if(!firm)return;
   // Only prefill if field is currently empty (don't overwrite user edits)
@@ -1728,9 +1948,10 @@ Order them from most urgent to least urgent. Include the statute of limitations,
 Generate a comprehensive 30-day action checklist for this ${d.practice} matter in ${d.jurisdiction}. Format as a numbered list. Include exactly 15 items. Items should be specific, actionable, and sequenced logically. Cover: immediate preservation actions, client communication, filing/administrative tasks, investigation steps, legal research needed, deadline calendaring, and any ${d.practice}-specific requirements in ${d.jurisdiction}. Each item should be one clear sentence.`;
 
   try{
-    const json=await callClaude({model:'gemini-2.0-flash',max_tokens:4096,messages:[{role:'user',content:prompt}]});const raw=json.content?.map(b=>b.text||'').join('')||'';
+    const json=await callClaude({model:'claude-sonnet-4-20250514',max_tokens:4096,_isMatterGen:true,messages:[{role:'user',content:prompt}]});const raw=json.content?.map(b=>b.text||'').join('')||'';
     const ex=(k)=>{const m=raw.match(new RegExp(`===${k}===([\\s\\S]*?)(?====|$)`,'i'));return m?m[1].trim():'';};
     pending.docs.summary=ex('CASE SUMMARY');pending.docs.letter=ex('ENGAGEMENT LETTER');pending.docs.deadlinesRaw=ex('DEADLINE CALENDAR');pending.docs.checklist=ex('MATTER CHECKLIST');
+    recordMatterGenerated();
     clearInterval(iv);gs.forEach(id=>document.getElementById(id).classList.add('done'));
     setTimeout(()=>{
       document.getElementById('gen-anim').style.display='none';
@@ -1769,13 +1990,13 @@ function addBubble(role,text){const msgs=document.getElementById('chat-msgs');co
 function addTyping(){const msgs=document.getElementById('chat-msgs');const div=document.createElement('div');div.className='cmsg ai';div.id='typing';div.innerHTML=`<div class="cavatar">AI</div><div class="cbubble"><div class="typing-wrap"><div class="td"></div><div class="td"></div><div class="td"></div></div></div>`;msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;}
 function rmTyping(){const el=document.getElementById('typing');if(el)el.remove();}
 async function sendChat(){const input=document.getElementById('cin');const text=input.value.trim();if(!text)return;const m=matters.find(x=>x.id===currentId);if(!m)return;input.value='';input.style.height='auto';addBubble('user',text);chatHist.push({role:'user',content:text});addTyping();
-  const sys=`You are The Bar's practice-enablement assistant reviewing this matter:
+  const sys=`You are The Bar's AI legal assistant reviewing this matter:
 MATTER: ${m.matterTitle||m.clientFirst+' '+m.clientLast} | PRACTICE: ${m.practice} | JURISDICTION: ${m.jurisdiction}
 CLIENT: ${m.clientFirst} ${m.clientLast} | OPPOSING: ${m.opposingParty||'None'}
 FACTS: ${m.description} | DEADLINES: ${m.knownDeadlines||'None'} | INCIDENT: ${m.incidentDate||'N/A'}
 SUMMARY ON FILE: ${m.docs.summary?.slice(0,400)||'None'}
 Be precise, concise, professional. Note that responses require attorney review.`;
-  try{const json=await callClaude({model:'gemini-2.0-flash',max_tokens:2048,system:sys,messages:chatHist});const reply=json.content?.map(b=>b.text||'').join('')||'Unable to respond.';chatHist.push({role:'assistant',content:reply});rmTyping();addBubble('ai',reply);}
+  try{const json=await callClaude({model:'claude-sonnet-4-20250514',max_tokens:2048,system:sys,messages:chatHist});const reply=json.content?.map(b=>b.text||'').join('')||'Unable to respond.';chatHist.push({role:'assistant',content:reply});rmTyping();addBubble('ai',reply);}
   catch(err){rmTyping();addBubble('ai','Connection error. Please retry.');safeLog(err);}
 }
 function chatKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}}
@@ -1820,11 +2041,11 @@ Structure every research response as follows:
 **CONCLUSION**
 [Clear, actionable conclusion with specific guidance]
 
-⚠️ *Clerical AI Output — Not Legal Advice. Requires mandatory independent attorney verification under Model Rule 1.1 (Competence). Citations must be confirmed against current official reporters. Legal standards change; this output reflects training data as of the model's knowledge date only.*
+⚠️ *Research Disclaimer: This AI research requires independent verification by a licensed attorney before reliance. Citations should be confirmed in Westlaw, LexisNexis, or official reporters. Laws change; this research reflects training data only.*
 ${matterCtx?`\nMATTER CONTEXT: This research is for a ${matterCtx.practice} matter in ${matterCtx.jurisdiction}. Client situation: ${matterCtx.description?.slice(0,400)} — tailor the research to be specifically relevant to this matter.`:''}`;
 
   try{
-    const json=await callClaude({model:'gemini-2.0-flash',max_tokens:4096,system:sys,messages:[{role:'user',content:`Legal Research Query: ${q}${jur?'\nJurisdiction: '+jur:''}`}]});const answer=json.content?.map(b=>b.text||'').join('')||'No result.';
+    const json=await callClaude({model:'claude-sonnet-4-20250514',max_tokens:4096,system:sys,messages:[{role:'user',content:`Legal Research Query: ${q}${jur?'\nJurisdiction: '+jur:''}`}]});const answer=json.content?.map(b=>b.text||'').join('')||'No result.';
     const entry={q,jur,answer,time:new Date().toLocaleTimeString()};resHistory.unshift(entry);
     const formatted=answer.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>').replace(/\n\n/g,'</p><p style="margin-bottom:8px;line-height:1.75;">').replace(/\n/g,'<br>');
     const wrappedFormatted='<p style="margin-bottom:8px;line-height:1.75;">'+formatted+'</p>';
@@ -1861,8 +2082,8 @@ Draft a complete, properly formatted ${type}. Requirements:
 
 Produce the complete document now:`;
   try{
-    const json=await callClaude({model:'gemini-2.0-flash',max_tokens:4096,messages:[{role:'user',content:prompt}]});const draft=json.content?.map(b=>b.text||'').join('')||'Draft failed.';
-    out.innerHTML=`<div class="ob active"><div class="ob-h" onclick="tog('dr-ob')"><div class="ob-ht">${type} — Draft</div><div style="display:flex;gap:7px;align-items:center;"><button class="cpbtn" onclick="cp('dr-ob-body',event)">Copy</button><button class="cpbtn" onclick="doPrint()">PDF</button><div class="ob-tog">▾</div></div></div><div class="ob-body" id="dr-ob-body">${formatDoc(draft)}</div></div><div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--tm);padding:8px 0;">Clerical AI Output — Not Legal Advice. Requires mandatory independent attorney verification under Model Rule 1.1 (Competence) before filing, sending, or reliance.</div>`;
+    const json=await callClaude({model:'claude-sonnet-4-20250514',max_tokens:4096,messages:[{role:'user',content:prompt}]});const draft=json.content?.map(b=>b.text||'').join('')||'Draft failed.';
+    out.innerHTML=`<div class="ob active"><div class="ob-h" onclick="tog('dr-ob')"><div class="ob-ht">${type} — Draft</div><div style="display:flex;gap:7px;align-items:center;"><button class="cpbtn" onclick="cp('dr-ob-body',event)">Copy</button><button class="cpbtn" onclick="doPrint()">PDF</button><div class="ob-tog">▾</div></div></div><div class="ob-body" id="dr-ob-body">${formatDoc(draft)}</div></div><div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--tm);padding:8px 0;">AI draft requires attorney review and revision before filing or sending.</div>`;
   }catch(err){out.innerHTML=`<div style="color:var(--red);font-family:'DM Mono',monospace;font-size:10px;padding:14px;">Draft failed. Please retry.</div>`;safeLog(err);}
 }
 
@@ -1902,7 +2123,7 @@ List 5 common objections opposing counsel may raise during this deposition (with
 ===STRATEGY MEMORANDUM===
 Write 4–5 paragraphs covering: overall deposition strategy, key things to watch for with this type of witness, how to handle evasive answers, what a "win" looks like for this deposition, and how this deposition fits into the overall case strategy.`;
   try{
-    const json2=await callClaude({model:'gemini-2.0-flash',max_tokens:4096,messages:[{role:'user',content:prompt2}]});const raw2=json2.content?.map(b=>b.text||'').join('')||'';
+    const json2=await callClaude({model:'claude-sonnet-4-20250514',max_tokens:4096,messages:[{role:'user',content:prompt2}]});const raw2=json2.content?.map(b=>b.text||'').join('')||'';
     const ex2=(k)=>{const m=raw2.match(new RegExp(`===${k}===([\\s\\S]*?)(?====|$)`,'i'));return m?m[1].trim():'';};
     const sections=[['OPENING QUESTIONS','Opening Questions'],['CORE QUESTIONS','Core Questions'],['COMMITMENT QUESTIONS','Commitment & Trap Questions'],['DOCUMENTS TO USE','Documents to Use'],['OBJECTIONS TO ANTICIPATE','Objections to Anticipate'],['STRATEGY MEMORANDUM','Strategy Memorandum']];
     out.innerHTML=`<div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--parchment);margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);">Deposition Prep: ${witness}</div>`+sections.map(([key,title])=>{const content=ex2(key);const sid='dep-'+key.replace(/ /g,'-').replace(/[^a-zA-Z0-9-]/g,'');return content?`<div class="ob"><div class="ob-h" onclick="tog('${sid}')"><div class="ob-ht">${title}</div><div style="display:flex;gap:7px;align-items:center;"><button class="cpbtn" onclick="cp('${sid}-b',event)">Copy</button><div class="ob-tog">▾</div></div></div><div class="ob-body" id="${sid}-b">${formatDoc(content)}</div></div>`:''}).join('');
@@ -1940,7 +2161,7 @@ Requirements:
 - Include 4-6 negotiation points with specific suggested alternatives
 - Flag all red flags`;
   try{
-    const json=await callClaude({model:'gemini-2.0-flash',max_tokens:4096,messages:[{role:'user',content:daPrompt}]});const raw=json.content?.map(b=>b.text||'').join('')||'{}';
+    const json=await callClaude({model:'claude-sonnet-4-20250514',max_tokens:4096,messages:[{role:'user',content:daPrompt}]});const raw=json.content?.map(b=>b.text||'').join('')||'{}';
     const data=JSON.parse(raw.replace(/```json|```/g,'').trim());
     const riskColor=data.overallRisk==='HIGH'?'var(--red)':data.overallRisk==='MEDIUM'?'var(--amber)':'var(--green)';
     out.innerHTML=`<div class="fs"><div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;"><div><div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--parchment);">Document Analysis</div><div style="font-size:12px;color:var(--ts);margin-top:4px;">${data.summary||''}</div></div><div style="font-family:'DM Mono',monospace;font-size:9px;padding:4px 10px;border:1px solid ${riskColor};color:${riskColor};white-space:nowrap;margin-left:12px;">Risk: ${data.overallRisk||'—'}</div></div>
@@ -1982,7 +2203,7 @@ Provide a rigorous analysis. Return ONLY valid JSON (no markdown):
 
 Include 6-8 factors. Be realistic and jurisdiction-specific. Specials: $${specials.toLocaleString()}.`;
   try{
-    const json=await callClaude({model:'gemini-2.0-flash',max_tokens:2048,messages:[{role:'user',content:settlPrompt}]});const raw=json.content?.map(b=>b.text||'').join('')||'{}';
+    const json=await callClaude({model:'claude-sonnet-4-20250514',max_tokens:2048,messages:[{role:'user',content:settlPrompt}]});const raw=json.content?.map(b=>b.text||'').join('')||'{}';
     const data=JSON.parse(raw.replace(/```json|```/g,'').trim());
     const fmt=n=>'$'+Math.round(n).toLocaleString();const pct=Math.round((data.mid/(data.high||1))*100);
     out.innerHTML=`<div class="fs"><div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--parchment);margin-bottom:14px;">Settlement Value Estimate</div>
@@ -2019,7 +2240,7 @@ Return ONLY valid JSON (no markdown, no preamble):
 Include ALL of these claim types with accurate ${state}-specific statutes:
 personal injury (negligence), medical malpractice, breach of written contract, breach of oral contract, fraud/misrepresentation, property damage, defamation (libel), defamation (slander), wrongful death, products liability, employment discrimination, breach of fiduciary duty, legal malpractice, assault and battery, conversion/theft, breach of warranty, professional negligence, intentional infliction of emotional distress`;
   try{
-    const json3=await callClaude({model:'gemini-2.0-flash',max_tokens:3000,messages:[{role:'user',content:solPrompt}]});const raw3=json3.content?.map(b=>b.text||'').join('')||'{}';
+    const json3=await callClaude({model:'claude-sonnet-4-20250514',max_tokens:3000,messages:[{role:'user',content:solPrompt}]});const raw3=json3.content?.map(b=>b.text||'').join('')||'{}';
     const data3=JSON.parse(raw3.replace(/```json|```/g,'').trim());
     const claims=data3.claims||[];
     let deadlineHtml='';
@@ -2108,7 +2329,7 @@ Requirements:
 - Be specific to ${practice} — not generic`;
 
   try{
-    const json=await callClaude({model:'gemini-2.0-flash',max_tokens:2048,messages:[{role:'user',content:billPrompt}]});
+    const json=await callClaude({model:'claude-sonnet-4-20250514',max_tokens:2048,messages:[{role:'user',content:billPrompt}]});
     const data=JSON.parse(json.content?.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim()||'{}');
     const tasks=data.tasks||[];
     const minT=tasks.reduce((s,t)=>s+t.minHours,0),maxT=tasks.reduce((s,t)=>s+t.maxHours,0);
@@ -2146,14 +2367,27 @@ function loadSettings(){
   document.getElementById('set-firm').value=firm.firmName||'';
   document.getElementById('set-jur2').value=firm.state||'';
   document.getElementById('set-rate').value=firm.rate||350;
-  const section=document.getElementById('apikey-section');
-  if(section){
-    section.style.display='block';
-    const sel=document.getElementById('provider-select');
-    if(sel)sel.value=_provider;
-    syncProviderUI(_provider);
-    updateApiKeyStatus();
-  }
+  _probeProxy().then(()=>{
+    const badge=document.getElementById('api-mode-badge');
+    const section=document.getElementById('apikey-section');
+    if(IS_SERVER_PROXY&&!_apiKey){
+      // Server proxy active and no user key override — hide key section entirely
+      if(section)section.style.display='none';
+      if(badge){badge.textContent='Managed — No Key Required';badge.style.color='var(--green)';}
+    } else {
+      // Show key section: either local mode or user wants to override
+      if(section)section.style.display='block';
+      if(IS_SERVER_PROXY){
+        if(badge){badge.textContent='Server Proxy — Active';badge.style.color='var(--green)';}
+      } else {
+        if(badge){badge.textContent='Local / BYO Key';badge.style.color='var(--ts)';}
+      }
+      const sel=document.getElementById('provider-select');
+      if(sel)sel.value=_provider;
+      syncProviderUI(_provider);
+      updateApiKeyStatus();
+    }
+  });
 }
 function onProviderChange(val){
   _provider=val;
