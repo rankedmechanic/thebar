@@ -1,0 +1,14 @@
+{
+  "name": "thebar",
+  "version": "6.1.0",
+  "description": "TheBar — Legal Practice Enablement Platform",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
