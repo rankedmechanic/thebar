@@ -1,14 +1,23 @@
 {
-  "name": "thebar",
-  "version": "6.1.0",
-  "description": "TheBar — Legal Practice Enablement Platform",
-  "type": "module",
+  "name": "the-bar",
+  "version": "7.0.0",
+  "description": "The Bar — AI Legal Practice Platform",
+  "private": true,
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js"
   },
   "engines": {
-    "node": ">=18.0.0"
-  }
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "express": "^4.22.1"
+  },
+  "keywords": [
+    "legal-tech",
+    "ai",
+    "practice-management"
+  ],
+  "license": "UNLICENSED"
 }
