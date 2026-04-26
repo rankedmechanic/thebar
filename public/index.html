@@ -1495,16 +1495,18 @@ You are operating in a high-throughput, automated legal environment.
 async function callClaude(body) {
   _checkRateLimit();
 
+  // Strip caller-supplied model and _isMatterGen before any processing
+  const isMatterGen = !!body._isMatterGen;
+  const { _isMatterGen: _drop1, model: _drop2, ...cleanBody } = body;
+  body = cleanBody;
+
   // Inject token optimizer into every system prompt
   if (body.system) {
     body = { ...body, system: body.system + TOKEN_OPTIMIZER };
   }
 
-  // Check freemium gate for matter-generating calls — strip flag before sending
-  const isMatterGen = !!body._isMatterGen;
+  // Check freemium gate for matter-generating calls
   if (isMatterGen) {
-    const { _isMatterGen, ...cleanBody } = body;
-    body = cleanBody;
     const gate = freemiumGate();
     if (gate === 'blocked') { showPaywall('limit'); throw new Error('Free limit reached.'); }
   }
@@ -1513,10 +1515,13 @@ async function callClaude(body) {
   await _probeProxy();
 
   if (IS_SERVER_PROXY) {
+    // On server proxy: always route as Anthropic with the correct model.
+    // The user's localStorage _provider is irrelevant here — never forward
+    // Gemini/OpenAI model strings to the Anthropic proxy.
     const res = await fetch('/api/claude', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+      body: JSON.stringify({ ...body, model: PROVIDERS.anthropic.model }),
     });
     if (!res.ok) {
       let errMsg = `Server error ${res.status}`;
@@ -1526,9 +1531,8 @@ async function callClaude(body) {
     return res.json();
   }
 
-  // ── BYOK / local mode (Tech Tier users who've added their own key) ──
+  // ── Local / BYOK mode ─────────────────────────────────────────────────────
   if (!_apiKey) {
-    // No key and no proxy — show the paywall with BYOK option
     showPaywall('nokey');
     throw new Error('No API key — please upgrade or add your key.');
   }
@@ -1539,14 +1543,15 @@ async function callClaude(body) {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': _apiKey, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({ ...body, model: body.model || PROVIDERS.anthropic.model }),
+      body: JSON.stringify({ ...body, model: PROVIDERS.anthropic.model }),
     });
     if (!res.ok) {
       const text = await res.text();
       if (res.status === 401) { _apiKey = ''; localStorage.removeItem('tb_apikey_anthropic'); toast('Invalid API key — cleared.', 'err'); }
-      throw new Error(`API ${res.status}: ${safeErr(text).slice(0, 200)}`);
+      throw new Error(`API ${res.status}: ${safeErr(text).slice(0,200)}`);
     }
     return res.json();
+
   } else if (_provider === 'openai') {
     const msgs = [];
     if (body.system) msgs.push({ role: 'system', content: body.system });
@@ -1559,15 +1564,17 @@ async function callClaude(body) {
     if (!res.ok) {
       const text = await res.text();
       if (res.status === 401) { _apiKey = ''; localStorage.removeItem('tb_apikey_openai'); toast('Invalid key — cleared.', 'err'); }
-      throw new Error(`API ${res.status}: ${safeErr(text).slice(0, 200)}`);
+      throw new Error(`API ${res.status}: ${safeErr(text).slice(0,200)}`);
     }
     const data = await res.json();
     return { content: [{ type: 'text', text: data.choices?.[0]?.message?.content || '' }] };
+
   } else if (_provider === 'gemini') {
     const parts = [];
     if (body.system) parts.push({ text: body.system + '\n\n' });
     (body.messages || []).forEach(m => parts.push({ text: m.content }));
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${PROVIDERS.gemini.model}:generateContent?key=${_apiKey}`, {
+    // v1 API (not v1beta), always PROVIDERS.gemini.model — never the Anthropic model string
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1/models/${PROVIDERS.gemini.model}:generateContent?key=${_apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ contents: [{ parts }], generationConfig: { maxOutputTokens: body.max_tokens || 4096 } }),
@@ -1575,13 +1582,16 @@ async function callClaude(body) {
     if (!res.ok) {
       const text = await res.text();
       if (res.status === 400 || res.status === 403) { _apiKey = ''; localStorage.removeItem('tb_apikey_gemini'); toast('Invalid key — cleared.', 'err'); }
-      throw new Error(`API ${res.status}: ${safeErr(text).slice(0, 200)}`);
+      throw new Error(`API ${res.status}: ${safeErr(text).slice(0,200)}`);
     }
     const data = await res.json();
     return { content: [{ type: 'text', text: data.candidates?.[0]?.content?.parts?.[0]?.text || '' }] };
   }
 
-  throw new Error('Unknown provider: ' + _provider);
+  // Unknown provider — reset to anthropic so next call works
+  _provider = 'anthropic'; localStorage.setItem('tb_provider', 'anthropic');
+  toast('Unknown AI provider — reset to Anthropic, please retry.', 'err');
+  throw new Error('Provider reset to anthropic — please retry.');
 }
 
 function save(){localStorage.setItem('tb4_matters',JSON.stringify(matters));localStorage.setItem('tb4_firm',JSON.stringify(firm));localStorage.setItem('tb4_time',JSON.stringify(timeEntries));updateBadge();updateUsageBar();}
